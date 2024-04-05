@@ -434,6 +434,8 @@ void virtio_video_pix_fmt_sp2mp(const struct v4l2_pix_format *pix,
 				struct v4l2_pix_format_mplane *pix_mp);
 void virtio_video_pix_fmt_mp2sp(const struct v4l2_pix_format_mplane *pix_mp,
 				struct v4l2_pix_format *pix);
+int virtio_video_frmsizeenum_from_fmt(struct video_format *fmt,
+				      struct v4l2_frmsizeenum *f);
 
 int virtio_video_g_selection(struct file *file, void *fh,
 			     struct v4l2_selection *sel);
