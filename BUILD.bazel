@@ -175,6 +175,7 @@ _VIRT_COMMON_MODULES = [
     "btintel.ko",
     "btrtl.ko",
     "btusb.ko",
+    "clk-scmi.ko",
     "cfg80211.ko",
     "dummy_hcd.ko",
     "failover.ko",
