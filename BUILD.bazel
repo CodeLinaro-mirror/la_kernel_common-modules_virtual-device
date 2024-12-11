@@ -232,6 +232,12 @@ _VIRT_AARCH64_MODULES = [
     "virtio_pmem.ko",
 ]
 
+_GUNYAH_MODULES = [
+    # keep sorted
+    "gh_rm_drv.ko",
+    "hvc_gunyah.ko",
+]
+
 _VIRT_RISCV64_MODULES = [
     # keep sorted
     "nd_virtio.ko",
@@ -399,7 +405,7 @@ kernel_build(
         "modules",
         "arm/fvp-base-revc.dtb",
     ],
-    module_outs = _VIRT_COMMON_MODULES + _VIRT_AARCH64_MODULES,
+    module_outs = _VIRT_COMMON_MODULES + _VIRT_AARCH64_MODULES + _GUNYAH_MODULES,
 )
 
 kernel_abi(
