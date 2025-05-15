@@ -172,16 +172,12 @@ ddk_headers(
 
 _VIRT_COMMON_MODULES = [
     # keep sorted
-    "btintel.ko",
-    "btrtl.ko",
-    "btusb.ko",
     "clk-scmi.ko",
     "cfg80211.ko",
     "dummy_hcd.ko",
     "failover.ko",
     "goldfish_battery.ko",
     "gs_usb.ko",
-    "hci_vhci.ko",
     "mac80211.ko",
     "mac80211_hwsim.ko",
     "mt76.ko",
