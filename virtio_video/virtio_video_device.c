@@ -184,7 +184,9 @@ build_virtio_video_sglist(struct virtio_video_resource_sg_list *sgl,
 		sgl->entries[i].addr = cpu_to_le64(has_iommu
 							? sg_dma_address(sg)
 							: sg_phys(sg));
-		sgl->entries[i].length = cpu_to_le32(sg->length);
+		sgl->entries[i].length = cpu_to_le32(has_iommu
+							? sg_dma_len(sg)
+							: sg->length);
 	}
 
 	sgl->num_entries = sgt->nents;
@@ -221,7 +223,7 @@ int virtio_video_buf_init(struct vb2_buffer *vb)
 							    vvd->has_iommu);
 		}
 	} else {
-		buf_size = vb->num_planes * VIRTIO_VIDEO_RESOURCE_SG_SIZE(nents);
+		buf_size = vb->num_planes * VIRTIO_VIDEO_RESOURCE_SG_SIZE(1);
 
 		buf = kcalloc(1, buf_size, GFP_KERNEL);
 		if (!buf)
@@ -343,40 +345,14 @@ int virtio_video_enum_framesizes(struct file *file, void *fh,
 	struct virtio_video_stream *stream = file2stream(file);
 	struct virtio_video_device *vvd = to_virtio_vd(stream->video_dev);
 	struct video_format *fmt;
-	struct video_format_frame *frm;
-	struct virtio_video_format_frame *frame;
-	int idx = f->index;
 
 	fmt = virtio_video_find_video_format(&vvd->input_fmt_list,
 					     f->pixel_format);
 	if (fmt == NULL)
 		fmt = virtio_video_find_video_format(&vvd->output_fmt_list,
 						     f->pixel_format);
-	if (fmt == NULL)
-		return -EINVAL;
 
-	if (idx >= fmt->desc.num_frames)
-		return -EINVAL;
-
-	frm = &fmt->frames[idx];
-	frame = &frm->frame;
-
-	if (frame->width.min == frame->width.max &&
-	    frame->height.min == frame->height.max) {
-		f->type = V4L2_FRMSIZE_TYPE_DISCRETE;
-		f->discrete.width = frame->width.min;
-		f->discrete.height = frame->height.min;
-		return 0;
-	}
-
-	f->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
-	f->stepwise.min_width = frame->width.min;
-	f->stepwise.max_width = frame->width.max;
-	f->stepwise.min_height = frame->height.min;
-	f->stepwise.max_height = frame->height.max;
-	f->stepwise.step_width = frame->width.step;
-	f->stepwise.step_height = frame->height.step;
-	return 0;
+	return virtio_video_frmsizeenum_from_fmt(fmt, f);
 }
 
 static bool in_stepped_interval(struct virtio_video_format_range range,
@@ -401,7 +377,7 @@ int virtio_video_enum_framemintervals(struct file *file, void *fh,
 	struct virtio_video_device *vvd = to_virtio_vd(stream->video_dev);
 	struct video_format *fmt;
 	struct video_format_frame *frm;
-	struct virtio_video_format_frame *frame;
+	struct virtio_video_format_frame *frame = NULL;
 	struct virtio_video_format_range *frate;
 	int idx = f->index;
 	int f_idx;
@@ -414,7 +390,7 @@ int virtio_video_enum_framemintervals(struct file *file, void *fh,
 	if (fmt == NULL)
 		return -EINVAL;
 
-	for (f_idx = 0; f_idx <= fmt->desc.num_frames; f_idx++) {
+	for (f_idx = 0; f_idx < fmt->desc.num_frames; f_idx++) {
 		frm = &fmt->frames[f_idx];
 		frame = &frm->frame;
 		if (in_stepped_interval(frame->width, f->width) &&
