@@ -239,6 +239,7 @@ _GUNYAH_MODULES = [
     "gh_msgq.ko",
     "gh_rm_drv.ko",
     "hvc_gunyah.ko",
+    "rename_devices.ko",
 ]
 
 _VIRT_RISCV64_MODULES = [
