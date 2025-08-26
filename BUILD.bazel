@@ -236,6 +236,7 @@ _GUNYAH_MODULES = [
     # keep sorted
     "gh_arm_drv.ko",
     "gh_dbl.ko",
+    "gh_msgq.ko",
     "gh_rm_drv.ko",
     "hvc_gunyah.ko",
 ]
