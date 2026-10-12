@@ -20,10 +20,6 @@
 #error CONFIG_PCI is required
 #endif
 
-#if !defined(CONFIG_COMPAT) && !defined(CONFIG_COMPAT_32) && !defined(CONFIG_ARM)
-#error CONFIG_COMPAT or CONFIG_COMPAT_32 is required
-#endif
-
 /* b/241785095 */
 #ifndef CONFIG_ARM64_16K_PAGES
 #ifndef CONFIG_INCREMENTAL_FS
